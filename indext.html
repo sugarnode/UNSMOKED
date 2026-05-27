@@ -1,0 +1,556 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>UNSMOKED</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0a0a;
+    --bg-card: #141414;
+    --bg-card-hover: #1a1a1a;
+    --accent: #c8ff00;
+    --accent-dim: rgba(200, 255, 0, 0.12);
+    --accent-glow: rgba(200, 255, 0, 0.06);
+    --text: #f0f0f0;
+    --text-muted: #999;
+    --text-dim: #555;
+    --border: #1e1e1e;
+    --danger: #ff4d4d;
+    --font-display: 'Syne', sans-serif;
+    --font-body: 'DM Sans', sans-serif;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    background: var(--bg); color: var(--text);
+    font-family: var(--font-body); line-height: 1.75; overflow-x: hidden;
+  }
+  ::selection { background: var(--accent); color: var(--bg); }
+
+  /* NAV */
+  nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    padding: 1rem 2rem;
+    display: flex; justify-content: space-between; align-items: center;
+    background: rgba(10,10,10,0.88); backdrop-filter: blur(20px);
+    border-bottom: 1px solid var(--border);
+  }
+  .nav-logo { font-family: var(--font-display); font-weight: 800; font-size: 1rem; letter-spacing: 3px; text-transform: uppercase; color: var(--accent); }
+  .nav-links { display: flex; gap: 1.8rem; list-style: none; }
+  .nav-links a { color: var(--text-dim); text-decoration: none; font-size: 0.8rem; font-weight: 500; letter-spacing: 0.5px; text-transform: uppercase; transition: color 0.2s; }
+  .nav-links a:hover { color: var(--accent); }
+
+  /* HAMBURGER */
+  .nav-toggle { display: none; background: none; border: none; cursor: pointer; padding: 4px; }
+  .nav-toggle span { display: block; width: 22px; height: 2px; background: var(--text-muted); margin: 5px 0; transition: all 0.3s; }
+  .nav-toggle.open span:nth-child(1) { transform: rotate(45deg) translate(4px, 5px); }
+  .nav-toggle.open span:nth-child(2) { opacity: 0; }
+  .nav-toggle.open span:nth-child(3) { transform: rotate(-45deg) translate(4px, -5px); }
+
+  /* HERO */
+  .hero { min-height: 100vh; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; padding: 2rem; position: relative; }
+  .hero::before { content: ''; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 500px; height: 500px; background: radial-gradient(circle, var(--accent-glow) 0%, transparent 70%); pointer-events: none; }
+  .hero-ot { font-size: 0.8rem; font-weight: 500; letter-spacing: 4px; text-transform: uppercase; color: var(--accent); margin-bottom: 1.5rem; opacity: 0; animation: fadeUp 0.8s ease 0.3s forwards; }
+  .hero h1 { font-family: var(--font-display); font-size: clamp(2.6rem, 6.5vw, 5rem); font-weight: 800; line-height: 1.05; max-width: 780px; opacity: 0; animation: fadeUp 0.8s ease 0.5s forwards; }
+  .hero h1 .hl { color: var(--accent); }
+  .hero-sub { font-size: 1.1rem; color: var(--text-muted); max-width: 500px; margin-top: 1.5rem; font-weight: 300; opacity: 0; animation: fadeUp 0.8s ease 0.7s forwards; }
+  .hero-cta { margin-top: 2.5rem; display: flex; gap: 1rem; flex-wrap: wrap; justify-content: center; opacity: 0; animation: fadeUp 0.8s ease 0.9s forwards; }
+  .btn-p { display: inline-block; padding: 0.85rem 2rem; background: var(--accent); color: var(--bg); font-family: var(--font-display); font-weight: 700; font-size: 0.85rem; letter-spacing: 1px; text-transform: uppercase; text-decoration: none; border: none; cursor: pointer; transition: all 0.25s; }
+  .btn-p:hover { transform: translateY(-2px); box-shadow: 0 8px 25px var(--accent-dim); }
+  .btn-g { display: inline-block; padding: 0.85rem 2rem; background: transparent; color: var(--text-muted); font-family: var(--font-display); font-weight: 600; font-size: 0.85rem; letter-spacing: 1px; text-transform: uppercase; text-decoration: none; border: 1px solid var(--border); transition: all 0.25s; }
+  .btn-g:hover { border-color: var(--text-muted); color: var(--text); }
+  .scroll-ind { position: absolute; bottom: 2.5rem; left: 50%; transform: translateX(-50%); display: flex; flex-direction: column; align-items: center; gap: 0.5rem; opacity: 0; animation: fadeUp 0.8s ease 1.1s forwards; }
+  .scroll-ind span { font-size: 0.65rem; letter-spacing: 3px; text-transform: uppercase; color: var(--text-dim); }
+  .scroll-line { width: 1px; height: 36px; background: linear-gradient(to bottom, var(--accent), transparent); animation: pulse 2s ease-in-out infinite; }
+
+  /* SECTIONS */
+  section { padding: 5rem 2rem; max-width: 1000px; margin: 0 auto; }
+  .s-label { font-size: 0.72rem; font-weight: 500; letter-spacing: 4px; text-transform: uppercase; color: var(--accent); margin-bottom: 0.75rem; }
+  .s-title { font-family: var(--font-display); font-size: clamp(1.8rem, 3.5vw, 2.6rem); font-weight: 800; line-height: 1.15; margin-bottom: 0.75rem; }
+  .s-desc { font-size: 1rem; color: var(--text-muted); max-width: 580px; font-weight: 300; margin-bottom: 2.5rem; line-height: 1.7; }
+  .divider { border-top: 1px solid var(--border); }
+
+  /* STATS */
+  .stat-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 1.5rem; margin-bottom: 2.5rem; }
+  .stat-block { text-align: center; padding: 1.5rem 1rem; border: 1px solid var(--border); }
+  .stat-num { font-family: var(--font-display); font-size: 2.5rem; font-weight: 800; color: var(--accent); line-height: 1; margin-bottom: 0.4rem; }
+  .stat-lbl { font-size: 0.82rem; color: var(--text-muted); }
+
+  /* CARDS */
+  .card-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(270px, 1fr)); gap: 1.25rem; }
+  .card { background: var(--bg-card); border: 1px solid var(--border); padding: 1.75rem; transition: all 0.3s; position: relative; overflow: hidden; }
+  .card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px; background: var(--accent); transform: scaleX(0); transform-origin: left; transition: transform 0.4s ease; }
+  .card:hover { background: var(--bg-card-hover); border-color: #2a2a2a; transform: translateY(-3px); }
+  .card:hover::before { transform: scaleX(1); }
+  .card-num { font-family: var(--font-display); font-size: 2.5rem; font-weight: 800; color: var(--accent); opacity: 0.12; line-height: 1; margin-bottom: 0.75rem; }
+  .card h3 { font-family: var(--font-display); font-weight: 700; font-size: 1.05rem; margin-bottom: 0.6rem; }
+  .card p { font-size: 0.88rem; color: var(--text-muted); line-height: 1.65; }
+
+  /* FACT LIST */
+  .fact-list { list-style: none; display: flex; flex-direction: column; gap: 0.85rem; }
+  .fact-list li { padding: 1.1rem 1.3rem; border-left: 2px solid var(--accent); background: var(--bg-card); font-size: 0.9rem; color: var(--text-muted); transition: all 0.2s; }
+  .fact-list li:hover { border-left-color: var(--danger); background: var(--bg-card-hover); color: var(--text); }
+  .fact-list li strong { color: var(--text); font-weight: 600; }
+
+  /* QUIZ */
+  .quiz-box { background: var(--bg-card); border: 1px solid var(--border); padding: 2.5rem; max-width: 660px; position: relative; }
+  .q-progress { display: flex; gap: 6px; margin-bottom: 1.5rem; }
+  .q-dot { height: 3px; flex: 1; background: var(--border); transition: background 0.3s; }
+  .q-dot.done { background: var(--accent); }
+  .q-dot.active { background: var(--accent); opacity: 0.5; }
+  .q-counter { font-size: 0.75rem; color: var(--text-dim); margin-bottom: 1rem; letter-spacing: 1px; text-transform: uppercase; }
+  .q-text { font-family: var(--font-display); font-size: 1.2rem; font-weight: 700; margin-bottom: 1.5rem; line-height: 1.35; }
+  .q-opts { display: flex; flex-direction: column; gap: 0.6rem; }
+  .q-opt { padding: 0.85rem 1.2rem; border: 1px solid var(--border); background: transparent; color: var(--text); font-family: var(--font-body); font-size: 0.88rem; text-align: left; cursor: pointer; transition: all 0.2s; }
+  .q-opt:hover { border-color: var(--accent); background: var(--accent-dim); }
+  .q-opt.ok { border-color: var(--accent); background: var(--accent-dim); }
+  .q-opt.no { border-color: var(--danger); background: rgba(255,77,77,0.08); }
+  .q-opt:disabled { cursor: default; }
+  .q-fb { margin-top: 1.2rem; padding: 1rem 1.2rem; font-size: 0.85rem; line-height: 1.65; display: none; }
+  .q-fb.show { display: block; }
+  .q-fb.ok-fb { border-left: 2px solid var(--accent); color: var(--text-muted); }
+  .q-fb.no-fb { border-left: 2px solid var(--danger); color: var(--text-muted); }
+  .q-fb a { color: var(--accent); text-decoration: none; font-size: 0.8rem; font-weight: 600; }
+  .q-next { margin-top: 1.5rem; display: none; }
+  .q-next button { padding: 0.6rem 1.5rem; font-family: var(--font-display); font-weight: 600; font-size: 0.8rem; letter-spacing: 0.5px; text-transform: uppercase; border: 1px solid var(--border); background: transparent; color: var(--text-muted); cursor: pointer; transition: all 0.2s; }
+  .q-next button:hover { border-color: var(--accent); color: var(--accent); }
+
+  /* SCORE CARD */
+  .score-card { text-align: center; padding: 2rem 1rem; }
+  .score-ring { position: relative; width: 140px; height: 140px; margin: 0 auto 1.5rem; }
+  .score-ring svg { transform: rotate(-90deg); }
+  .score-ring .bg-ring { stroke: var(--border); }
+  .score-ring .fg-ring { stroke: var(--accent); stroke-linecap: round; transition: stroke-dashoffset 1s ease; }
+  .score-val { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-family: var(--font-display); font-size: 2rem; font-weight: 800; color: var(--accent); }
+  .score-msg { font-size: 0.95rem; color: var(--text-muted); max-width: 420px; margin: 0 auto 1.5rem; line-height: 1.65; }
+  .score-label { font-family: var(--font-display); font-size: 1.1rem; font-weight: 700; margin-bottom: 0.75rem; }
+
+  /* CALCULATOR */
+  .calc-box { background: var(--bg-card); border: 1px solid var(--border); padding: 2.5rem; max-width: 660px; }
+  .calc-row { margin-bottom: 2rem; }
+  .calc-label { font-size: 0.85rem; color: var(--text-muted); margin-bottom: 0.75rem; display: flex; justify-content: space-between; align-items: baseline; }
+  .calc-val { font-family: var(--font-display); font-weight: 700; color: var(--accent); font-size: 1rem; }
+  .calc-slider { -webkit-appearance: none; appearance: none; width: 100%; height: 4px; background: var(--border); outline: none; border-radius: 2px; }
+  .calc-slider::-webkit-slider-thumb { -webkit-appearance: none; appearance: none; width: 20px; height: 20px; background: var(--accent); border-radius: 50%; cursor: pointer; }
+  .calc-slider::-moz-range-thumb { width: 20px; height: 20px; background: var(--accent); border-radius: 50%; cursor: pointer; border: none; }
+  .calc-result { border-top: 1px solid var(--border); padding-top: 2rem; text-align: center; }
+  .calc-total { font-family: var(--font-display); font-size: 3rem; font-weight: 800; color: var(--accent); line-height: 1; margin-bottom: 0.5rem; }
+  .calc-total-label { font-size: 0.85rem; color: var(--text-muted); margin-bottom: 2rem; }
+  .equiv-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 1rem; }
+  .equiv-card { border: 1px solid var(--border); padding: 1.2rem; text-align: center; transition: all 0.2s; }
+  .equiv-card:hover { border-color: #333; }
+  .equiv-num { font-family: var(--font-display); font-size: 1.6rem; font-weight: 800; color: var(--text); margin-bottom: 0.25rem; }
+  .equiv-what { font-size: 0.78rem; color: var(--text-muted); line-height: 1.4; }
+
+  /* TIPS */
+  .tips-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.25rem; }
+  .tip-card { background: var(--bg-card); border: 1px solid var(--border); padding: 1.75rem; display: flex; gap: 1rem; align-items: flex-start; }
+  .tip-icon { font-family: var(--font-display); font-weight: 800; font-size: 1.3rem; color: var(--accent); flex-shrink: 0; margin-top: 2px; }
+  .tip-card h3 { font-family: var(--font-display); font-weight: 700; font-size: 0.95rem; margin-bottom: 0.4rem; }
+  .tip-card p { font-size: 0.82rem; color: var(--text-muted); line-height: 1.6; }
+
+  /* RESOURCE */
+  .res-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(270px, 1fr)); gap: 1.25rem; }
+  .res-card { background: var(--bg-card); border: 1px solid var(--border); padding: 1.75rem; transition: all 0.3s; display: flex; flex-direction: column; gap: 0.6rem; }
+  .res-card:hover { border-color: var(--accent); transform: translateY(-2px); }
+  .res-card h3 { font-family: var(--font-display); font-weight: 700; font-size: 1rem; }
+  .res-card p { font-size: 0.82rem; color: var(--text-muted); line-height: 1.6; flex: 1; }
+  .res-card a { color: var(--accent); text-decoration: none; font-size: 0.82rem; font-weight: 600; letter-spacing: 0.5px; text-transform: uppercase; }
+
+  /* ACADEMIC */
+  .academic-sec { background: var(--bg-card); margin-top: 3rem; padding: 3.5rem 2rem; max-width: 100%; }
+  .academic-inner { max-width: 1000px; margin: 0 auto; }
+  .academic-inner p { font-size: 0.9rem; color: var(--text-muted); line-height: 1.7; }
+
+  footer { padding: 2.5rem 2rem; text-align: center; border-top: 1px solid var(--border); }
+  footer p { font-size: 0.75rem; color: var(--text-dim); line-height: 1.8; }
+
+  @keyframes fadeUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+  @keyframes pulse { 0%,100% { opacity: 0.3; } 50% { opacity: 0.8; } }
+  .reveal { opacity: 0; transform: translateY(25px); transition: all 0.6s cubic-bezier(0.16,1,0.3,1); }
+  .reveal.vis { opacity: 1; transform: translateY(0); }
+
+  @media (max-width: 768px) {
+    nav { padding: 0.8rem 1.2rem; }
+    .nav-toggle { display: block; }
+    .nav-links {
+      display: none; flex-direction: column; position: absolute;
+      top: 100%; left: 0; right: 0; background: rgba(10,10,10,0.96);
+      padding: 1.5rem; gap: 1.2rem; border-bottom: 1px solid var(--border);
+    }
+    .nav-links.open { display: flex; }
+    section { padding: 3.5rem 1.2rem; }
+    .quiz-box, .calc-box { padding: 1.5rem; }
+    .calc-total { font-size: 2.2rem; }
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-logo">Unsmoked</div>
+  <button class="nav-toggle" onclick="this.classList.toggle('open');document.querySelector('.nav-links').classList.toggle('open')" aria-label="Menu">
+    <span></span><span></span><span></span>
+  </button>
+  <ul class="nav-links">
+    <li><a href="#playbook">The Business</a></li>
+    <li><a href="#feed">Your Feed</a></li>
+    <li><a href="#body">Your Body</a></li>
+    <li><a href="#quiz">Quiz</a></li>
+    <li><a href="#cost">The Cost</a></li>
+    <li><a href="#quit">Support</a></li>
+    <li><a href="#trust">Trust</a></li>
+  </ul>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <span class="hero-ot">Group Pandora</span>
+  <h1>Think you <span class="hl">chose</span> to vape?</h1>
+  <p class="hero-sub">In the UK, 1 in 4 teens aged 11–15 have tried e-cigarettes. We looked into why, and what the evidence actually says.</p>
+  <div class="hero-cta">
+    <a href="#playbook" class="btn-p">See the evidence</a>
+    <a href="#quit" class="btn-g">I want to quit</a>
+  </div>
+  <div class="scroll-ind"><span>Scroll</span><div class="scroll-line"></div></div>
+</section>
+
+<!-- 01: INDUSTRY -->
+<section id="playbook" class="divider">
+  <div class="reveal">
+    <div class="s-label">01: The Business Model</div>
+    <h2 class="s-title">How vaping products are designed to appeal to young people.</h2>
+    <p class="s-desc">E-cigarettes were originally developed for adult smokers trying to quit. But the way they're designed, priced, and sold raises questions about who they're really made for.</p>
+  </div>
+  <div class="card-grid">
+    <div class="card reveal"><div class="card-num">01</div><h3>Flavour engineering</h3><p>Mango, bubblegum, strawberry. Sweet flavours reduce the harshness of nicotine and make first experimentation feel easier. Research shows these flavours are particularly appealing to adolescents (Pepper, Ribisl & Brewer, 2016).</p></div>
+    <div class="card reveal"><div class="card-num">02</div><h3>Product design</h3><p>Many vapes are compact, colourful, and look more like tech gadgets than nicotine products. The UK government has acknowledged that these design features may attract children and young people (DHSC, 2024).</p></div>
+    <div class="card reveal"><div class="card-num">03</div><h3>Price point</h3><p>Disposable vapes are deliberately cheap, often just a few pounds. Research confirms that low prices reduce one of the last barriers to trying (Wang et al., 2026).</p></div>
+    <div class="card reveal"><div class="card-num">04</div><h3>The "safer" framing</h3><p>E-cigarettes are less harmful than traditional cigarettes for adult smokers, but "less harmful" doesn't mean "safe," especially for someone who never smoked in the first place (ASH, 2025).</p></div>
+  </div>
+  <p class="reveal" style="font-size: 0.9rem; color: var(--text-muted); margin-top: 2.5rem; max-width: 660px; line-height: 1.7; border-left: 2px solid var(--accent); padding-left: 1.2rem;">In April 2026, the UK passed the Tobacco and Vapes Act, giving the government powers to restrict flavours, require standardised packaging, and regulate how vapes are displayed in shops (Hogan Lovells, 2026). The full impact of these changes is still to be seen.</p>
+</section>
+
+<!-- 02: YOUR FEED -->
+<section id="feed" class="divider">
+  <div class="reveal">
+    <div class="s-label">02: Your Feed</div>
+    <h2 class="s-title">How vaping became normal online.</h2>
+    <p class="s-desc">Social media is one of the main ways young people encounter vaping, but the content usually only shows part of the picture.</p>
+  </div>
+  <div class="card-grid">
+    <div class="card reveal"><div class="card-num">01</div><h3>Entertainment over information</h3><p>On TikTok and YouTube, vaping content focuses on tricks, flavours, and aesthetics. Research shows positive vaping content online vastly outweighs health information (Smith et al., 2023).</p></div>
+    <div class="card reveal"><div class="card-num">02</div><h3>Influencer marketing</h3><p>Some creators feature vapes in lifestyle posts without clear sponsorship disclosure. UK studies found this is one of the first ways many teenagers discover e-cigarettes (Smith & Hilton, 2023).</p></div>
+    <div class="card reveal"><div class="card-num">03</div><h3>Peer norms and screen time</h3><p>A UK cohort study found that daily social media exposure more than doubles the risk of youth vaping, because it constantly reinforces the idea that vaping is normal (Laverty et al., 2025).</p></div>
+  </div>
+</section>
+
+<!-- 03: YOUR BODY -->
+<section id="body" class="divider">
+  <div class="reveal">
+    <div class="s-label">03: What the Evidence Says</div>
+    <h2 class="s-title">Your body is still developing. Here's what the science shows so far.</h2>
+    <p class="s-desc">This isn't about scare tactics. It's about what researchers have actually found, including what we still don't know.</p>
+  </div>
+  <div class="stat-row reveal">
+    <div class="stat-block"><div class="stat-num"><span data-target="25" data-suffix="%">0</span></div><div class="stat-lbl">of UK 11–15 year olds have tried vaping</div></div>
+    <div class="stat-block"><div class="stat-num"><span data-target="9" data-suffix="%">0</span></div><div class="stat-lbl">use e-cigarettes regularly or occasionally</div></div>
+  </div>
+  <ul class="fact-list reveal">
+    <li><strong>Brain development.</strong> The prefrontal cortex, which is responsible for decisions, attention, and impulse control, continues developing until around age 25. Nicotine can interfere with how the brain forms connections during this period (U.S. Department of Health and Human Services, 2016).</li>
+    <li><strong>It's not water vapour.</strong> E-cigarette aerosol contains nicotine, flavouring chemicals, and other substances that can affect the lungs and brain (NASEM, 2018). The claim that it's "just water vapour" is inaccurate.</li>
+    <li><strong>A possible gateway.</strong> Evidence suggests young vapers are more likely to start smoking traditional cigarettes. One study found that nearly half of adolescent e-cigarette users had started smoking within two years (Aleyan et al., 2018).</li>
+    <li><strong>We don't have long-term data yet.</strong> E-cigarettes have been widely used for about 15 years. No long-term outcome data exists for people who started vaping as teenagers. That uncertainty itself matters (Royal College of Physicians, 2024).</li>
+  </ul>
+</section>
+
+<!-- 04: QUIZ -->
+<section id="quiz" class="divider">
+  <div class="reveal">
+    <div class="s-label">04: Test Yourself</div>
+    <h2 class="s-title">How much do you actually know?</h2>
+    <p class="s-desc">5 questions. No judgment. Just the gap between what you assumed and what's actually true.</p>
+  </div>
+  <div class="quiz-box reveal" id="quiz-box">
+    <div class="q-progress" id="q-progress"></div>
+    <div class="q-counter" id="qcount"></div>
+    <div class="q-text" id="qtext"></div>
+    <div class="q-opts" id="qopts"></div>
+    <div class="q-fb ok-fb" id="fb-ok"></div>
+    <div class="q-fb no-fb" id="fb-no"></div>
+    <div class="q-next" id="qnext"><button onclick="nextQ()">Next question</button></div>
+    <div id="score-area" style="display:none"></div>
+  </div>
+</section>
+
+<!-- 05: COST CALCULATOR -->
+<section id="cost" class="divider">
+  <div class="reveal">
+    <div class="s-label">05: The Real Cost</div>
+    <h2 class="s-title">What else could you do with that money?</h2>
+    <p class="s-desc">Drag the sliders. See where your money is actually going.</p>
+  </div>
+  <div class="calc-box reveal">
+    <div class="calc-row">
+      <div class="calc-label">
+        <span>Disposable vapes per week</span>
+        <span class="calc-val" id="vapes-val">3</span>
+      </div>
+      <input type="range" class="calc-slider" id="vapes-slider" min="1" max="14" value="3" oninput="updateCalc()">
+    </div>
+    <div class="calc-row">
+      <div class="calc-label">
+        <span>Price per vape</span>
+        <span class="calc-val" id="price-val">£5.00</span>
+      </div>
+      <input type="range" class="calc-slider" id="price-slider" min="3" max="10" value="5" step="0.5" oninput="updateCalc()">
+    </div>
+    <div class="calc-result">
+      <div class="calc-total" id="calc-total">£780</div>
+      <div class="calc-total-label">spent on vaping per year</div>
+      <div class="equiv-grid" id="equiv-grid"></div>
+      <p style="font-size: 0.7rem; color: var(--text-dim); margin-top: 1.5rem;">Equivalents based on approximate UK average prices, 2025–26.</p>
+    </div>
+  </div>
+</section>
+
+<!-- 06: SUPPORT -->
+<section id="quit" class="divider">
+  <div class="reveal">
+    <div class="s-label">06: Support</div>
+    <h2 class="s-title">Want to stop? There's help out there.</h2>
+    <p class="s-desc">Nicotine dependence is a real thing, not a personal failing. If you want to cut down or quit, these are good places to start.</p>
+  </div>
+  <div class="res-grid reveal">
+    <div class="res-card"><h3>Talk to Frank</h3><p>The UK government's drug advice service. Honest, factual information about vaping, its effects, and the law. Free helpline, live chat, and text support.</p><a href="https://www.talktofrank.com/drug/vapes" target="_blank" rel="noopener">Visit Talk to Frank →</a></div>
+    <div class="res-card"><h3>NCSCT: Stopping Vaping</h3><p>Evidence-based guidance on how to support young people who want to stop vaping. Share this with a teacher, school nurse, or parent who wants to help.</p><a href="https://www.ncsct.co.uk/publications/category/young-people-stopping-vaping" target="_blank" rel="noopener">Visit NCSCT →</a></div>
+    <div class="res-card"><h3>Talk to someone you trust</h3><p>A GP, school nurse, parent, or anyone you feel comfortable with. They can help you find local support and won't judge you for asking.</p></div>
+  </div>
+</section>
+
+<!-- 07: TRUST -->
+<section id="trust" class="divider">
+  <div class="reveal">
+    <div class="s-label">07: Who Can You Trust?</div>
+    <h2 class="s-title">Not everything online is trying to help you.</h2>
+    <p class="s-desc">Anyone can post health claims. Here's how to check what's reliable.</p>
+  </div>
+  <div class="tips-grid reveal">
+    <div class="tip-card"><div class="tip-icon">?</div><div><h3>Who made this?</h3><p>Is it from a health organisation, a company selling vapes, or an anonymous account? The source changes everything.</p></div></div>
+    <div class="tip-card"><div class="tip-icon">!</div><div><h3>Where's the evidence?</h3><p>Reliable information links to research or explains where the data comes from. "Trust me" is not a source.</p></div></div>
+    <div class="tip-card"><div class="tip-icon">£</div><div><h3>Is someone making money?</h3><p>If a post promotes a product, even subtly, there's probably a commercial interest behind it.</p></div></div>
+    <div class="tip-card"><div class="tip-icon">~</div><div><h3>Does it show both sides?</h3><p>Good health information explains risks and benefits, and is honest about what we still don't know.</p></div></div>
+  </div>
+</section>
+
+<!-- ACADEMIC -->
+<div class="academic-sec" id="academic">
+  <div class="academic-inner">
+    <div class="s-label">For Educators & Health Professionals</div>
+    <h2 class="s-title" style="font-size:1.6rem; margin-bottom: 1rem;">About this website</h2>
+    <p>All content is based on peer-reviewed evidence. The site structure draws on Nutbeam's (2000) health literacy framework, progressing from accessible information through interactive engagement to critical thinking, and on social marketing principles (Andreasen, 1994). The full academic report is available as part of our project submission.</p>
+  </div>
+</div>
+
+<footer><p>Made by MPH students at the University of Manchester, 2025/26. We don't collect your data.</p></footer>
+
+<script>
+// Scroll reveal
+const obs = new IntersectionObserver((entries) => {
+  entries.forEach((e,i) => { if (e.isIntersecting) { setTimeout(() => e.target.classList.add('vis'), i*60); obs.unobserve(e.target); } });
+}, { threshold: 0.12 });
+document.querySelectorAll('.reveal').forEach(el => obs.observe(el));
+
+// Animated stat numbers
+const statObs = new IntersectionObserver((entries) => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      const el = e.target;
+      const target = parseInt(el.dataset.target);
+      const suffix = el.dataset.suffix || '';
+      const duration = 1200;
+      const startTime = performance.now();
+      function animate(now) {
+        const elapsed = now - startTime;
+        const progress = Math.min(elapsed / duration, 1);
+        const eased = 1 - Math.pow(1 - progress, 3);
+        const current = Math.round(eased * target);
+        el.textContent = current + suffix;
+        if (progress < 1) requestAnimationFrame(animate);
+      }
+      requestAnimationFrame(animate);
+      statObs.unobserve(el);
+    }
+  });
+}, { threshold: 0.5 });
+document.querySelectorAll('.stat-num [data-target]').forEach(el => statObs.observe(el));
+
+// Quiz
+const Q = [
+  { q: "How many cigarettes' worth of nicotine is in a single disposable vape?",
+    opts: ["About 5","About 10–15","About 40–50","Less than 1"], c: 2,
+    ok: "It's about 40–50 cigarettes' worth. A standard 2ml disposable at 20mg/ml contains far more nicotine than most people guess. The small size is part of the design. It doesn't look like it could contain that much.",
+    no: "Most people guess too low. A single disposable vape contains roughly as much nicotine as 40–50 cigarettes. The compact design makes it easy to underestimate.",
+    link: "#body" },
+  { q: "At what age does your brain fully finish developing?",
+    opts: ["16","18","21","25"], c: 3,
+    ok: "25, later than most people think. Your prefrontal cortex, which handles decisions, focus, and impulse control, is still developing throughout your teens and early twenties. Nicotine exposure during this period can affect that process.",
+    no: "It's actually around 25. That means nicotine exposure during the teenage years is affecting a brain that's still being built.",
+    link: "#body" },
+  { q: "What percentage of vaping content on social media focuses on health risks rather than entertainment?",
+    opts: ["About half","A small minority","Roughly equal","The majority"], c: 1,
+    ok: "Correct. Health content is vastly outnumbered. Research shows entertainment and lifestyle content about vaping overwhelmingly dominates online, while health information is rare and gets far less engagement.",
+    no: "It's a small minority. Studies found that lifestyle and entertainment content about vaping massively outweighs any health information online (Smith et al., 2023).",
+    link: "#feed" },
+  { q: "E-cigarettes are often called 'water vapour.' What does the aerosol actually contain?",
+    opts: ["Mostly pure water","Nicotine, flavouring chemicals, and other substances","Just flavoured steam","Oxygen and plant extracts"], c: 1,
+    ok: "Right. E-cigarette aerosol contains nicotine, flavouring chemicals, and other potentially harmful substances (NASEM, 2018). The 'water vapour' description is inaccurate.",
+    no: "It's not water vapour. Analysis has found nicotine, flavouring chemicals, and other substances that may affect health. The 'just water vapour' claim doesn't hold up to the evidence.",
+    link: "#body" },
+  { q: "If you use 3 disposable vapes a week at £5 each, how much do you spend in a year?",
+    opts: ["About £200","About £500","About £780","About £1,200"], c: 2,
+    ok: "£780. That's enough for a return flight to most places in Europe, or about 70 cinema trips. The weekly cost feels small. The yearly number doesn't.",
+    no: "It's £780: 3 × £5 × 52 weeks. Most people underestimate this because they think in weekly amounts. Try the cost calculator below to see your own number.",
+    link: "#cost" }
+];
+
+let qi = 0, score = 0, answered = false;
+
+function buildProgress() {
+  document.getElementById('q-progress').innerHTML = Q.map((_,i) => '<div class="q-dot" id="dot-'+i+'"></div>').join('');
+}
+
+function loadQ() {
+  answered = false;
+  const d = Q[qi];
+  document.getElementById('qcount').textContent = 'Question '+(qi+1)+' of '+Q.length;
+  document.getElementById('qtext').textContent = d.q;
+  document.getElementById('fb-ok').className = 'q-fb ok-fb';
+  document.getElementById('fb-no').className = 'q-fb no-fb';
+  document.getElementById('qnext').style.display = 'none';
+  Q.forEach((_,i) => {
+    const dot = document.getElementById('dot-'+i);
+    dot.className = 'q-dot' + (i < qi ? ' done' : '') + (i === qi ? ' active' : '');
+  });
+  const box = document.getElementById('qopts'); box.innerHTML = '';
+  d.opts.forEach((o,i) => {
+    const b = document.createElement('button');
+    b.className = 'q-opt'; b.textContent = o;
+    b.onclick = () => pick(i);
+    box.appendChild(b);
+  });
+}
+
+function pick(i) {
+  if (answered) return; answered = true;
+  const d = Q[qi], btns = document.querySelectorAll('.q-opt');
+  btns.forEach(b => { b.disabled = true; b.style.pointerEvents = 'none'; });
+  if (i === d.c) {
+    score++;
+    btns[i].classList.add('ok');
+    const fb = document.getElementById('fb-ok');
+    fb.innerHTML = d.ok + '<br><a href="'+d.link+'">Learn more →</a>';
+    fb.classList.add('show');
+  } else {
+    btns[i].classList.add('no'); btns[d.c].classList.add('ok');
+    const fb = document.getElementById('fb-no');
+    fb.innerHTML = d.no + '<br><a href="'+d.link+'">Learn more →</a>';
+    fb.classList.add('show');
+  }
+  document.getElementById('dot-'+qi).className = 'q-dot done';
+  if (qi < Q.length - 1) {
+    document.getElementById('qnext').style.display = 'block';
+  } else {
+    setTimeout(showScore, 600);
+  }
+}
+
+function nextQ() { qi++; loadQ(); }
+
+function showScore() {
+  const pct = Math.round((score / Q.length) * 100);
+  const circ = 2 * Math.PI * 58;
+  const offset = circ - (circ * pct / 100);
+
+  let msg = '';
+  if (pct === 100) {
+    msg = "You knew more than most people, including many adults. That awareness is yours now.";
+  } else if (pct >= 60) {
+    msg = "You got most of these right. The ones you missed? That's exactly the kind of information that's hard to find online.";
+  } else {
+    msg = "Don't worry about the score. The fact that some of these surprised you is the whole point. This information isn't always easy to find.";
+  }
+
+  ['q-progress','qcount','qtext','qopts','fb-ok','fb-no','qnext'].forEach(id => {
+    document.getElementById(id).style.display = 'none';
+  });
+
+  const area = document.getElementById('score-area');
+  area.style.display = 'block';
+  area.innerHTML =
+    '<div class="score-card">'+
+      '<div class="score-ring">'+
+        '<svg width="140" height="140" viewBox="0 0 140 140">'+
+          '<circle class="bg-ring" cx="70" cy="70" r="58" fill="none" stroke-width="6"/>'+
+          '<circle class="fg-ring" cx="70" cy="70" r="58" fill="none" stroke-width="6" stroke-dasharray="'+circ+'" stroke-dashoffset="'+circ+'" id="score-ring-fg"/>'+
+        '</svg>'+
+        '<div class="score-val">'+score+'/'+Q.length+'</div>'+
+      '</div>'+
+      '<div class="score-label">Your result</div>'+
+      '<div class="score-msg">'+msg+'</div>'+
+      '<button class="btn-g" onclick="resetQuiz()" style="font-size:0.8rem;">Take the quiz again</button>'+
+    '</div>';
+  requestAnimationFrame(() => {
+    requestAnimationFrame(() => {
+      document.getElementById('score-ring-fg').style.strokeDashoffset = offset;
+    });
+  });
+}
+
+function resetQuiz() {
+  qi = 0; score = 0;
+  ['q-progress','qcount','qtext','qopts'].forEach(id => {
+    document.getElementById(id).style.display = id === 'qopts' ? 'flex' : (id === 'q-progress' ? 'flex' : 'block');
+  });
+  document.getElementById('score-area').style.display = 'none';
+  buildProgress(); loadQ();
+}
+
+buildProgress(); loadQ();
+
+// Calculator
+const equivItems = [
+  { unit: 'return flights to Europe', cost: 120 },
+  { unit: 'months of gym membership', cost: 30 },
+  { unit: 'concert tickets', cost: 55 },
+  { unit: 'months of music streaming', cost: 11 },
+  { unit: 'new books', cost: 9 },
+  { unit: 'cinema trips with snacks', cost: 18 },
+];
+
+function updateCalc() {
+  const vapes = parseInt(document.getElementById('vapes-slider').value);
+  const price = parseFloat(document.getElementById('price-slider').value);
+  document.getElementById('vapes-val').textContent = vapes;
+  document.getElementById('price-val').textContent = '£' + price.toFixed(2);
+  const yearly = Math.round(vapes * price * 52);
+  document.getElementById('calc-total').textContent = '£' + yearly.toLocaleString();
+  document.getElementById('equiv-grid').innerHTML = equivItems.map(item => {
+    const count = Math.floor(yearly / item.cost);
+    return '<div class="equiv-card"><div class="equiv-num">'+count+'</div><div class="equiv-what">'+item.unit+'</div></div>';
+  }).join('');
+}
+updateCalc();
+
+// Close mobile nav on link click
+document.querySelectorAll('.nav-links a').forEach(a => {
+  a.addEventListener('click', () => {
+    document.querySelector('.nav-links').classList.remove('open');
+    document.querySelector('.nav-toggle').classList.remove('open');
+  });
+});
+</script>
+</body>
+</html>
